@@ -1,4 +1,5 @@
 """Models for movie ratings app."""
+import os
 from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
 
@@ -14,6 +15,8 @@ class User(db.Model):
     email = db.Column(db.String(255), unique = True)
     password = db.Column(db.String(255))
     
+    # ratings = a list of Rating objects
+    
     def __repr__(self):
         return f"<User user_id={self.user_id} email = {self.email}>"
     
@@ -26,6 +29,8 @@ class Movie(db.Model):
     overview = db.Column(db.Text) 
     release_date = db.Column(db.DateTime) 
     poster_path = db.Column(db.String(255)) 
+    
+    # ratings = a list of Rating objects
     
     def __repr__(self):
         return f"<Movie movie_id={self.movie_id} title={self.title}>"
