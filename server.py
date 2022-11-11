@@ -2,6 +2,8 @@
 
 from flask import Flask, render_template, request, flash, session, redirect
 from model import connect_to_db, db
+from forms import Login
+
 
 import crud
 
@@ -21,6 +23,60 @@ def homepage():
     """view homepage"""
     
     return render_template("homepage.html")
+
+@app.route('/login', methods=["POST"])
+def login():
+    """Login in user"""
+    
+    form = Login(request.form)
+    
+    # Form has been submitted with valid data
+    if form.validate_on_submit():
+        email = form.email.data
+        password = form.password.data
+        
+        # Check to see if user exist with this email
+        user = crud.get_user_by_email(email)
+        
+        if not user or user["password"] != password:
+            flash("Invalid email or password")
+            return redirect('/login')
+        
+        # Store email in session to keep track of logged in user
+        session["email"] = user["email"]
+        flash("Logged in successfully")
+        
+        return redirect('/')
+    
+    return render_template("homepage.html", form=form)
+
+@app.route('/logout')
+def logout():
+    
+    del session["email"]
+    flash("Logged out")
+    return redirect('/')
+    
+    
+
+@app.route('/users', methods=["POST"])
+def register_user():
+    """Create a new user"""
+    
+    email = request.form.get("email")
+    password = request.form.get("password")
+    
+    user = crud.get_user_by_email(email)
+    
+    if user:
+        flash("Cannot create an account with that email. Please try again.")
+    else:
+        user = crud.create_user(email, password)   
+        db.session.add(user)
+        db.session.commit()
+        flash("Account created! Please log in.") 
+        
+        return redirect('/')
 
 @app.route('/users')
 def get_users():

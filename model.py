@@ -51,6 +51,9 @@ class Rating(db.Model):
         return f"<Rating rating_id={self.rating_id} score={self.score}>"
     
 
+       
+    
+
     
     
 
