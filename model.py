@@ -50,14 +50,6 @@ class Rating(db.Model):
     def __repr__(self):
         return f"<Rating rating_id={self.rating_id} score={self.score}>"
     
-
-       
-    
-
-    
-    
-
-
 def connect_to_db(flask_app, db_uri=os.environ["POSTGRES_URI"], echo=True):
     flask_app.config["SQLALCHEMY_DATABASE_URI"] = db_uri
     flask_app.config["SQLALCHEMY_ECHO"] = echo
@@ -77,3 +69,11 @@ if __name__ == "__main__":
     # query it executes.
 
     connect_to_db(app, echo=False)
+
+       
+    
+
+    
+    
+
+

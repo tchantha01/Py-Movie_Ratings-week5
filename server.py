@@ -2,7 +2,7 @@
 
 from flask import Flask, render_template, request, flash, session, redirect
 from model import connect_to_db, db
-from forms import Login
+
 
 
 import crud
@@ -28,27 +28,23 @@ def homepage():
 def login():
     """Login in user"""
     
-    form = Login(request.form)
+    email = request.form.get("email")
+    password = request.form.get("password")
     
-    # Form has been submitted with valid data
-    if form.validate_on_submit():
-        email = form.email.data
-        password = form.password.data
-        
-        # Check to see if user exist with this email
-        user = crud.get_user_by_email(email)
-        
-        if not user or user["password"] != password:
-            flash("Invalid email or password")
-            return redirect('/login')
-        
-        # Store email in session to keep track of logged in user
-        session["email"] = user["email"]
-        flash("Logged in successfully")
-        
-        return redirect('/')
+    # Check to see if user exist with this email    
+    user = crud.get_user_by_email(email)
     
-    return render_template("homepage.html", form=form)
+    if not user or user.password != password:
+        flash("The email or password you entered is incorrect")
+    else:
+        session["user_email"] = user.email
+        flash(f"Welcome back, {user.email}!")    
+    
+    return redirect('/')    
+        
+    
+        
+    
 
 @app.route('/logout')
 def logout():
