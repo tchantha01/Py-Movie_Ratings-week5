@@ -106,6 +106,39 @@ def show_movie(movie_id):
     
     return render_template("movie_details.html", movie=movie)
 
+@app.route('/movies/<movie_id>/ratings', methods=["POST"])
+def create_rating(movie_id):
+    """Create a new movie rating"""
+    
+    logged_in_email = session.get("user_email")
+    rating_score = request.form.get("rating")
+    
+    if logged_in_email is None:
+        flash("You must log in to rate a movie.")
+    elif not rating_score:
+        flash("Error: you did not select a score for your rating.")
+    else:
+        user = crud.get_user_by_email(logged_in_email)
+        movie = crud.get_movie_by_id(movie_id)
+        rating = crud.create_rating(user, movie, int(rating_score))
+        db.session.add(rating)
+        db.session.commit()
+        
+        flash(f"You rated this movie {rating_score} out of 5.")  
+        
+    return redirect(f"/movies/{movie_id}")       
+
+@app.route("/update_rating", methods=["POST"])
+def update_rating():
+    """Update a rating"""
+    
+    rating_id = request.json["rating_id"]
+    update_score = request.json["update_score"]
+    crud.update_rating(rating_id, update_score)
+    db.session.commit()
+    
+    return "Success!"      
+
 
 
 if __name__ == "__main__":
